@@ -113,7 +113,8 @@ export class UsersService {
 
         )
         const profile = await this.profileRepository.findOneBy({ id: user.profile.id })
-
+            console.log(user)
+            console.log(profile)
         if (!user) {
             throw new HttpException(
                 'User not found. Cannot update user',

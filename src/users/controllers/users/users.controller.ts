@@ -9,7 +9,8 @@ import {
     HttpStatus,
     ParseFilePipe,
     FileTypeValidator,
-    MaxFileSizeValidator
+    MaxFileSizeValidator,
+    Put
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Observable, of } from 'rxjs';
@@ -17,7 +18,6 @@ import { UsersService } from 'src/users/services/users/users.service';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
-import { loginUser } from 'src/users/dtos/LoginUser.dto';
 
 export const storage = {
     storage: diskStorage({
@@ -50,16 +50,22 @@ export class UsersController {
     @Post("login")
     @UseInterceptors(FileInterceptor('body'))
     getUser(
-        @Body() body: loginUser
+        
+        @Body('username') username: string,
+        @Body('password') password: string,
 
     ) {
-        console.log(`POST /${body}`);
-        return this.userService.findUserBynameandPassword(body)
+        const user ={
+            username : username,
+            password : password
+        }
+        console.log(`POST /${user}`);
+        return this.userService.findUserBynameandPassword(user)
     }
 
 
 
-    @Post('editeprofile')
+    @Post("edit")
     @UseInterceptors(FileInterceptor('file', storage))
    async updateUserByUsername(
         @UploadedFile(
@@ -75,7 +81,8 @@ export class UsersController {
         @Body('firstname') firstname: string,
         @Body('lastname') lastname: string,
     ) {
-        console.log(`POST /${File}`);
+
+        console.log(`POST /${file}`);
         console.log(`POST /${storage}`);
 
         const userDetails = {
@@ -84,6 +91,7 @@ export class UsersController {
             firstname: firstname,
             lastname: lastname,
         }
+        console.log(userDetails)
 
         //* String contains two letters */
         const ckpassword = String(userDetails.password)
@@ -101,7 +109,7 @@ export class UsersController {
             }
         }
 
-       await this.userService.updateUserByUsername(userDetails, file.path)
+      return await this.userService.updateUserByUsername(userDetails, file.path)
 
 
     }
@@ -124,7 +132,7 @@ export class UsersController {
         @Body('firstname') firstname: string,
         @Body('lastname') lastname: string,
 
-    ): Observable<Object> {
+    ) {
 
     
         const userDetails = {
@@ -158,32 +166,7 @@ export class UsersController {
     }
 
 
-    // @Get("test")
-    // async test() {
-    //     const password = ["ABCDEF", "QWERAB"]
-    //     const lower = []
-    //     const number = []
-    //     console.log(lower.push(password[0].toLowerCase()), lower.push(password[1].toLowerCase()))
-
-
-    //     console.log(lower)
-
-
-    //     for (let i = 0; i < lower[1].length; ++i) {
-
-    //         const fir = String(lower[1][i]).charCodeAt(0)
-    //         number.push(fir)
-
-    //     }
-    //     console.log(number)
-
-    //     for (let i = 0; i < number.length; i++) {
-    //         if (number[i] + 1 === number[i + 1]) {
-    //             console.log("In")
-    //         }
-    //     }
-    //     // this.userService.test()
-    // }
+    
 
 
 
